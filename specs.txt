@@ -1,0 +1,16 @@
+This dataset is a modified version of the Car Evaluation Database in:
+
+http://archive.ics.uci.edu/ml/datasets/Car+Evaluation
+
+Each row in the dataset represents a car. The fields for each car are:
+
+Fields:
+
+PRICE: Buying price
+MAINT: Maintenance price
+DOORS: Number of doors
+PERSONS: Capacity in terms of persons to carry
+SAFETY: Estimated safety of the car. Possible values: low, med, high.
+CLASS: Is the car acceptable? Possible values: unacc (unacceptable), acc (acceptable)
+
+Note that CLASS is, precisely, the class. So, it should not be used to perform clustering but to validate it.
