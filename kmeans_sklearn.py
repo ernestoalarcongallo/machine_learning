@@ -86,7 +86,7 @@ def example():
     # column denotes the classes (ground truth) and all sample data is
     # pre-processed using standardization.
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    file = dir_path + '/' + 'small.csv' 
+    file = dir_path + '/' + 'prepared_data.csv' 
     [sampleData,groundTruth]=prepare_data(file)
     # Execute K-means with 2 clusters and pre-defined centroids.
     kMeansOut=KMeans(n_clusters=2,init=sampleData[0:2,:],max_iter=25).fit(sampleData)

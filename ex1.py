@@ -5,7 +5,7 @@ def load_data(fileName):
     """Loads and prepares the data in fileName.
     - The file must be CSV"""
 
-    df = pd.read_csv("small.csv")
+    df = pd.read_csv(fileName)
     return df
 
 def preprocess_data(df):
