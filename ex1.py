@@ -11,7 +11,7 @@ def load_data(fileName):
 def preprocess_data(df):
     """Preprocess the input data according the criteria observed in the csv
     - We will convert into integers the data provided
-    - Safety: low->1 medium->2 hight->3
+    - Safety: low->0 medium->1 hight->2
     - Class: unacc->0 acc->1"""
 
     col_safety = 'SAFETY'
@@ -19,11 +19,11 @@ def preprocess_data(df):
 
     for index, row in enumerate(df[col_safety]):
         if row == 'low':
-            df.iloc[index, df.columns.get_loc(col_safety)] = 1
+            df.iloc[index, df.columns.get_loc(col_safety)] = 0
         if row == 'med':
-            df.iloc[index, df.columns.get_loc(col_safety)] = 2
+            df.iloc[index, df.columns.get_loc(col_safety)] = 1
         if row == 'high':
-            df.iloc[index, df.columns.get_loc(col_safety)] = 3
+            df.iloc[index, df.columns.get_loc(col_safety)] = 2
         
     for index, row in enumerate(df[col_class]):
         if row == 'acc':
