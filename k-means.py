@@ -77,11 +77,12 @@ def distanceToMeans(df, theMeans):
             df.iloc[index_row, index_col] = row - aMean
     return df
 
-def distancesBetweenClusters(df):
+def distancesInCluster(df):
     for column in df:
         #print(df[column])
+        val = min(column, key=abs)
         for index, row in enumerate(df[column]):
-            print(index, row)
+            
 
 def execute():
     df = load_data('small.csv')
@@ -91,6 +92,6 @@ def execute():
     #theClasses, theCentroids = getClassesAndCentroidsFrom(df)
     #print_results(theClasses, theCentroids)
     #theClasses = distanceToMeans(theClasses, np.array(df.iloc[0, :]))
-    distancesBetweenClusters(df)
+    distancesInCluster(df)
 
 execute()
