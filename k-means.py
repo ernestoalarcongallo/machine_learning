@@ -79,9 +79,9 @@ def distanceToMeans(df, theMeans):
 
 def distancesBetweenClusters(df):
     for column in df:
-        #print(df[column])
+        
         for index, row in enumerate(df[column]):
-            print(index, row)
+
 
 def execute():
     df = load_data('small.csv')
