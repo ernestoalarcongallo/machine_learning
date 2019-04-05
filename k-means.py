@@ -82,7 +82,6 @@ def distancesInCluster(df):
         #print(df[column])
         val = min(column, key=abs)
         for index, row in enumerate(df[column]):
-            
 
 def execute():
     df = load_data('small.csv')
