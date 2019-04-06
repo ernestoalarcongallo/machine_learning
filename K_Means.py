@@ -11,7 +11,7 @@ class K_Means:
     def fit(self,data):
 
         self.centroids = {}
-        self.classesList = np.zeros((1, data.shape[0]))
+        self.classesList = np.zeros((data.shape[0]))
 
         for i in range(self.k):
             # for random uncommend this lines
@@ -29,10 +29,8 @@ class K_Means:
                 distances = [np.linalg.norm(featureset-self.centroids[centroid]) for centroid in self.centroids]
                 classification = distances.index(min(distances))
                 self.classifications[classification].append(featureset)
-                self.classesList[:, index] = classification
-            
-            self.classesList = np.reshape(self.classesList, self.classesList.shape[1])
-            
+                self.classesList[index] = classification
+                        
             prev_centroids = dict(self.centroids)
 
             for classification in self.classifications:
@@ -70,6 +68,10 @@ def load_data(fileName):
     - The file must be CSV"""
 
     df = pd.read_csv(fileName)
+    return df
+
+def load_data_without_headers(fileName):
+    df = pd.read_csv(fileName, header=None)
     return df
 
 def preprocess_data(df):
@@ -149,34 +151,20 @@ def print_final_results(theClasses,theCentroids,groundTruth):
     print(' - ACCURACY               : '+str(100*get_accuracy(theClasses,groundTruth))+'%')
 
 def execute():
-    """Execute all the process step by step"""
-    df = load_data('small.csv')
-    preprocess_data(df)
-    features, groundTruth = getFeaturesAndLabelsFrom(df)
-    features = standarize_features(features)
-    #print("\nThe standarized data:\n{}\n".format(features))
-    k_means = K_Means(k=2)
-    k_means.fit(features)
-    print_final_results(k_means.classesList, k_means.centroids_list(), groundTruth)
-
-def execute2():
-    """Execute all the process step by step"""
-    df = load_data("pcaAttibutes.csv")
-    features = np.array(df)
-    groundTruth=features[:,-1]
-    features = standarize_features(features)
-    #print("\nThe standarized data:\n{}\n".format(features))
-    k_means = K_Means(k=2)
-    k_means.fit(features)
-    print_final_results(k_means.classesList, k_means.centroids_list(), groundTruth)
-
-
-def execute3():
+    np.set_printoptions(formatter={'float':lambda x: '%.2f'%x})
     [sampleData,groundTruth]=prepare_data("small.csv")
+    print(sampleData)
     k_means = K_Means(k=2)
     k_means.fit(sampleData)
     print_final_results(k_means.classesList, k_means.centroids_list(), groundTruth)
 
-#execute()
-#execute2()
-execute3()
+def execute_with_PCA_attributes():
+    np.set_printoptions(formatter={'float':lambda x: '%.2f'%x})
+    df = load_data_without_headers("pcaAttributes.csv")
+    [sampleData,groundTruth]=getFeaturesAndLabelsFrom(df)
+    k_means = K_Means(k=2)
+    k_means.fit(sampleData)
+    print_final_results(k_means.classesList, k_means.centroids_list(), groundTruth)
+
+execute()
+execute_with_PCA_attributes()

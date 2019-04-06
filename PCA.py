@@ -5,13 +5,13 @@ def load_data(fileName):
     """Loads and prepares the data in fileName.
     - The file must be CSV"""
 
-    df = pd.read_csv("small.csv")
+    df = pd.read_csv(fileName)
     return df
 
 def preprocess_data(df):
     """Preprocess the input data according the criteria observed in the csv
     - We will convert into integers the data provided
-    - Safety: low->1 medium->2 hight->3
+    - Safety: low->0 medium->1 hight->2
     - Class: unacc->0 acc->1"""
 
     col_safety = 'SAFETY'
@@ -19,11 +19,11 @@ def preprocess_data(df):
 
     for index, row in enumerate(df[col_safety]):
         if row == 'low':
-            df.iloc[index, df.columns.get_loc(col_safety)] = 1
+            df.iloc[index, df.columns.get_loc(col_safety)] = 0
         if row == 'med':
-            df.iloc[index, df.columns.get_loc(col_safety)] = 2
+            df.iloc[index, df.columns.get_loc(col_safety)] = 1
         if row == 'high':
-            df.iloc[index, df.columns.get_loc(col_safety)] = 3
+            df.iloc[index, df.columns.get_loc(col_safety)] = 2
         
     for index, row in enumerate(df[col_class]):
         if row == 'acc':
@@ -41,7 +41,9 @@ def standarize_features(features):
     """ Standarizes the data"""
     # Get means and standard deviations
     theMeans=np.mean(features,0)
+    print("theMeans {}".format(theMeans))
     theStd=np.std(features,0)
+    print("theStd {}".format(theStd))
     # Return the standardized data and the ground truth
     standarized_features = np.divide((features-theMeans),theStd)
     print('Standarized data:\n{}'.format(standarized_features))
@@ -50,7 +52,6 @@ def standarize_features(features):
 
 def pca(features):
     N = features.shape[0]
-    factor = 1/N
     covariance = np.dot(features.T,features)/N
     print('covariance:\n{}'.format(covariance))
     np.savetxt("covariance_matrix.csv", covariance, delimiter=",")
@@ -81,9 +82,10 @@ def get_explained_variance(eigenValues):
 
 def execute():
     """Execute all the process step by step"""
+    np.set_printoptions(formatter={'float':lambda x: '%.2f'%x})
     df = load_data('small.csv')
     preprocess_data(df)
-    features, _ = getFeaturesAndLabelsFrom(df)
+    features, labels = getFeaturesAndLabelsFrom(df)
     features = standarize_features(features)
     eigenValues, eigenVectors = pca(features)
     explainedVariances = get_explained_variance(eigenValues)
@@ -91,7 +93,13 @@ def execute():
     # Get the number of vectors to reach 95%
     numVectors=np.argmax(explainedVariances>.95)
     # Build the new attribute set
+    print(eigenVectors[:,:numVectors])
     projectedAttributes=np.dot(features,eigenVectors[:,:numVectors+1])
+    pcaAttibutes = np.zeros((projectedAttributes.shape[0], projectedAttributes.shape[1]+1))
+    for index, row in enumerate(projectedAttributes):
+        pcaAttibutes[index, :] = np.append(row, labels[index])
+    np.savetxt("pcaAttributes.csv", pcaAttibutes, delimiter=",")
+
     # Print results
     print('[PCA OUTPUT]')
     print(' - CUMULATIVE VARIANCES: '+str(explainedVariances))

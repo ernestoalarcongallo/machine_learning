@@ -34,6 +34,10 @@ def load_data(fileName):
     df = pd.read_csv(fileName)
     return df
 
+def load_data_without_headers(fileName):
+    df = pd.read_csv(fileName, header=None)
+    return df
+
 def preprocess_data(df):
     """Preprocess the input data according the criteria observed in the csv
     - We will convert into integers the data provided
@@ -139,4 +143,12 @@ def example():
     # Print results
     print_final_results(kMeansOut.labels_,kMeansOut.cluster_centers_,groundTruth)
 
+def example_with_PCA():
+    np.set_printoptions(formatter={'float':lambda x: '%.2f'%x})
+    df = load_data_without_headers("pcaAttributes.csv")
+    [sampleData, groundTruth] = getFeaturesAndLabelsFrom(df)
+    kMeansOut=KMeans(n_clusters=2,init=sampleData[0:2,:],max_iter=25).fit(sampleData)
+    print_final_results(kMeansOut.labels_,kMeansOut.cluster_centers_,groundTruth)  
+
 example()
+example_with_PCA()
