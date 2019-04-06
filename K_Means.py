@@ -102,15 +102,23 @@ def getFeaturesAndLabelsFrom(df):
     labels = np.array(df.iloc[:,-1])
     return features, labels
 
-def standarize_features(features):
-    """ Standarizes the data"""
+def prepare_data(fileName):
+    """Loads and prepares the data in fileName.
+    - The file must be CSV
+    - All fields must be integers
+    - First row is skipped
+    - Last column is ground truth (i.e. class)
+    - Standardization is performed to all data"""
+
+    # Load CSV file
+    df = load_data(fileName)
+    preprocess_data(df)
+    sampleData, groundTruth = getFeaturesAndLabelsFrom(df)
     # Get means and standard deviations
-    theMeans=np.mean(features,0)
-    theStd=np.std(features,0)
+    theMeans=np.mean(sampleData,0)
+    theStd=np.std(sampleData,0)
     # Return the standardized data and the ground truth
-    standarized_features = np.divide((features-theMeans),theStd)
-    np.savetxt("standarized_data.csv", standarized_features, delimiter=",")
-    return standarized_features
+    return [np.divide((sampleData-theMeans),theStd),groundTruth]
 
 def print_results(theClasses,theCentroids):
     """Prints the class members and centroids"""
@@ -144,12 +152,31 @@ def execute():
     """Execute all the process step by step"""
     df = load_data('small.csv')
     preprocess_data(df)
-    features, _ = getFeaturesAndLabelsFrom(df)
-    groundTruth=features[:,-1]
+    features, groundTruth = getFeaturesAndLabelsFrom(df)
     features = standarize_features(features)
-    print("\nThe standarized data:\n{}\n".format(features))
-    k_means = K_Means(k=3)
+    #print("\nThe standarized data:\n{}\n".format(features))
+    k_means = K_Means(k=2)
     k_means.fit(features)
     print_final_results(k_means.classesList, k_means.centroids_list(), groundTruth)
 
-execute()
+def execute2():
+    """Execute all the process step by step"""
+    df = load_data("pcaAttibutes.csv")
+    features = np.array(df)
+    groundTruth=features[:,-1]
+    features = standarize_features(features)
+    #print("\nThe standarized data:\n{}\n".format(features))
+    k_means = K_Means(k=2)
+    k_means.fit(features)
+    print_final_results(k_means.classesList, k_means.centroids_list(), groundTruth)
+
+
+def execute3():
+    [sampleData,groundTruth]=prepare_data("small.csv")
+    k_means = K_Means(k=2)
+    k_means.fit(sampleData)
+    print_final_results(k_means.classesList, k_means.centroids_list(), groundTruth)
+
+#execute()
+#execute2()
+execute3()

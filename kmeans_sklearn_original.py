@@ -19,9 +19,7 @@
 
 from sklearn.cluster import KMeans
 import numpy as np
-import os
 import pandas as pd
-from random import randint
 
 #######################################
 ### DATA PRINTING/LOADING FUNCTIONS ###
@@ -72,7 +70,6 @@ def prepare_data(fileName):
     - Last column is ground truth (i.e. class)
     - Standardization is performed to all data"""
 
-    # Load CSV file
     df = load_data(fileName)
     preprocess_data(df)
     sampleData, groundTruth = getFeaturesAndLabelsFrom(df)
@@ -122,20 +119,9 @@ def example():
     # Load data. This assumes a CSV where all values are numeric, the last
     # column denotes the classes (ground truth) and all sample data is
     # pre-processed using standardization.
-    
-    [sampleData,groundTruth]=prepare_data("small.csv")
+    [sampleData,groundTruth]=prepare_data('small.csv')
     # Execute K-means with 2 clusters and pre-defined centroids.
-    # FOR RANDOM:
-    n=2
-    init_sample=np.zeros((n, sampleData.shape[1]))
-    for i in range(n):
-        random_i = randint(0, sampleData.shape[0]-1)
-        init_sample[i] = sampleData[random_i]
-    #kMeansOut=KMeans(n_clusters=n,init=init_sample,max_iter=25).fit(sampleData) # RANDOM
-    
-    # FOR THE TWO FIRST
     kMeansOut=KMeans(n_clusters=2,init=sampleData[0:2,:],max_iter=25).fit(sampleData)
-    
     # Print results
     print_final_results(kMeansOut.labels_,kMeansOut.cluster_centers_,groundTruth)
 
