@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
+from random import randint
 
 class K_Means:
-    def __init__(self, k=2, tol=0.001, max_iter=300):
+    def __init__(self, k=2, tol=0.00000001, max_iter=300):
         self.k = k
         self.tol = tol
         self.max_iter = max_iter
@@ -10,9 +11,13 @@ class K_Means:
     def fit(self,data):
 
         self.centroids = {}
+        self.classesList = np.zeros((1, data.shape[0]))
 
         for i in range(self.k):
-            self.centroids[i] = data[i] # Set the first two centroids to start. TODO: set them random
+            # for random uncommend this lines
+            #random_i = randint(0, data.shape[0]-1)
+            #self.centroids[i] = data[random_i]
+            self.centroids[i] = data[i]
 
         for i in range(self.max_iter):
             self.classifications = {}
@@ -20,11 +25,14 @@ class K_Means:
             for i in range(self.k):
                 self.classifications[i] = []
 
-            for featureset in data:
+            for index, featureset in enumerate(data):
                 distances = [np.linalg.norm(featureset-self.centroids[centroid]) for centroid in self.centroids]
                 classification = distances.index(min(distances))
                 self.classifications[classification].append(featureset)
-
+                self.classesList[:, index] = classification
+            
+            self.classesList = np.reshape(self.classesList, self.classesList.shape[1])
+            
             prev_centroids = dict(self.centroids)
 
             for classification in self.classifications:
@@ -50,6 +58,12 @@ class K_Means:
             print("\nThe group {}:".format(key))
             for value in values:
                 print(value)
+
+    def centroids_list(self):
+        centroids_list = []
+        for key,value in self.centroids.items():
+            centroids_list.append(value)
+        return np.array(centroids_list)
 
 def load_data(fileName):
     """Loads and prepares the data in fileName.
@@ -98,17 +112,44 @@ def standarize_features(features):
     np.savetxt("standarized_data.csv", standarized_features, delimiter=",")
     return standarized_features
 
+def print_results(theClasses,theCentroids):
+    """Prints the class members and centroids"""
+    # Get the existing classes
+    foundClasses=np.unique(theClasses)
+    numFoundClasses=foundClasses.shape[0]
+    # Allocte space
+    formattedClasses=[]
+    # For each found class
+    for i in range(numFoundClasses):
+        # Get the sample indexes+1 to print class members
+        cIndex=[j+1 for j,x in enumerate(theClasses) if x==foundClasses[i]]
+        # Print the members and the centroids
+        print (' - CLASS '+str(int(foundClasses[i]))+' MEMBERS        : '+str(cIndex))
+        print (' - CLASS '+str(int(foundClasses[i]))+' CENTROID       : '+str(theCentroids[i,:]))
+
+def get_accuracy(theClasses,groundTruth):
+    """Computes the accuracy has the ratio between true estimates and total estimates"""
+    trueEstimates=np.count_nonzero((theClasses-groundTruth)==0)
+    totalEstimates=len(theClasses)
+    return float(trueEstimates)/float(totalEstimates)
+
+def print_final_results(theClasses,theCentroids,groundTruth):
+    """Prints K-Means output and performance"""
+    print('[K-MEANS OUTPUT]')
+    print_results(theClasses,theCentroids)
+    print('[K-MEANS PERFORMANCE]')
+    print(' - ACCURACY               : '+str(100*get_accuracy(theClasses,groundTruth))+'%')
+
 def execute():
     """Execute all the process step by step"""
     df = load_data('small.csv')
     preprocess_data(df)
     features, _ = getFeaturesAndLabelsFrom(df)
-    print("\nThe adapted data:\n{}\n".format(features))
+    groundTruth=features[:,-1]
     features = standarize_features(features)
     print("\nThe standarized data:\n{}\n".format(features))
-    k_means = K_Means(k=4)
+    k_means = K_Means(k=3)
     k_means.fit(features)
-    k_means.plot_centroids()
-    k_means.plot_classifications()
+    print_final_results(k_means.classesList, k_means.centroids_list(), groundTruth)
 
 execute()

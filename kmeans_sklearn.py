@@ -21,6 +21,7 @@ from sklearn.cluster import KMeans
 import numpy as np
 import os
 import pandas as pd
+from random import randint
 
 #######################################
 ### DATA PRINTING/LOADING FUNCTIONS ###
@@ -126,10 +127,26 @@ def example():
     # column denotes the classes (ground truth) and all sample data is
     # pre-processed using standardization.
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    file = dir_path + "/" + "small.csv" 
+    file = dir_path + "/" + "small.csv"
+    
+    #df = load_data(file)
+    #sampleData = np.array(df)
+    #[sampleData,groundTruth] = getFeaturesAndLabelsFrom(df)
+    
     [sampleData,groundTruth]=prepare_data(file)
     # Execute K-means with 2 clusters and pre-defined centroids.
-    kMeansOut=KMeans(n_clusters=2,init=sampleData[0:2,:],max_iter=25).fit(sampleData)
+    
+    # Taking only the first 4 characteristics
+    sampleData = sampleData[:,:-1]
+
+    n=3
+    init_sample=np.zeros((n, sampleData.shape[1]))
+    for i in range(n):
+        random_i = randint(0, sampleData.shape[0]-1)
+        init_sample[i] = sampleData[random_i]
+    
+    #kMeansOut=KMeans(n_clusters=n,init=init_sample,max_iter=25).fit(sampleData)
+    kMeansOut=KMeans(n_clusters=n,init=sampleData[0:n,:],max_iter=25).fit(sampleData)
     # Print results
     print_final_results(kMeansOut.labels_,kMeansOut.cluster_centers_,groundTruth)
 
