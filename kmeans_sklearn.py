@@ -18,6 +18,8 @@
 ###
 
 from sklearn.cluster import KMeans
+from sklearn.utils import check_random_state
+from sklearn.cluster import MiniBatchKMeans
 import numpy as np
 import os
 import pandas as pd
@@ -119,7 +121,7 @@ def print_final_results(theClasses,theCentroids,groundTruth):
 ### USAGE EXAMPLE ###
 #####################
 
-def example():
+def example(fileName):
     """Example"""
     # Configure numpy print options
     np.set_printoptions(formatter={'float':lambda x: '%.2f'%x})
@@ -127,7 +129,7 @@ def example():
     # column denotes the classes (ground truth) and all sample data is
     # pre-processed using standardization.
     
-    [sampleData,groundTruth]=prepare_data("small.csv")
+    [sampleData,groundTruth]=prepare_data(fileName)
     # Execute K-means with 2 clusters and pre-defined centroids.
     # FOR RANDOM:
     n=2
@@ -143,12 +145,37 @@ def example():
     # Print results
     print_final_results(kMeansOut.labels_,kMeansOut.cluster_centers_,groundTruth)
 
-def example_with_PCA():
+def example_with_PCA(fileName):
     np.set_printoptions(formatter={'float':lambda x: '%.2f'%x})
-    df = load_data_without_headers("pcaAttributes.csv")
+    df = load_data_without_headers(fileName)
     [sampleData, groundTruth] = getFeaturesAndLabelsFrom(df)
     kMeansOut=KMeans(n_clusters=2,init=sampleData[0:2,:],max_iter=25).fit(sampleData)
-    print_final_results(kMeansOut.labels_,kMeansOut.cluster_centers_,groundTruth)  
+    print_final_results(kMeansOut.labels_,kMeansOut.cluster_centers_,groundTruth)
 
-example()
-example_with_PCA()
+def example_KMeans_plus(fileName):
+    np.set_printoptions(formatter={'float':lambda x: '%.2f'%x})
+    [sampleData,groundTruth]=prepare_data(fileName)
+    kMeansOut=KMeans(n_clusters=2,init='k-means++',max_iter=25).fit(sampleData)
+    print_final_results(kMeansOut.labels_, kMeansOut.cluster_centers_, groundTruth)
+
+def example_KMeans_random(fileName):
+    np.set_printoptions(formatter={'float':lambda x: '%.2f'%x})
+    [sampleData,groundTruth]=prepare_data(fileName)
+    kMeansOut=KMeans(n_clusters=2,init='random',max_iter=25).fit(sampleData)
+    print_final_results(kMeansOut.labels_, kMeansOut.cluster_centers_, groundTruth)
+
+def example_MiniBatch_KMeans(fileName):
+    np.set_printoptions(formatter={'float':lambda x: '%.2f'%x})
+    [sampleData,groundTruth]=prepare_data(fileName)
+    random_state = np.random.RandomState(0)
+    miniBatchKMeans = MiniBatchKMeans(n_clusters=2, init='random', n_init=1, random_state=random_state).fit(sampleData)
+    print_final_results(miniBatchKMeans.labels_, miniBatchKMeans.cluster_centers_, groundTruth)
+    
+# example("small.csv")
+# example_with_PCA("pcaAttributes.csv")
+
+#example("car.csv")
+#example_with_PCA("pca_attributes_car.csv")
+example_KMeans_plus("car.csv")
+example_KMeans_random("car.csv")
+#example_MiniBatch_KMeans("car.csv")

@@ -164,6 +164,7 @@ def execute_with_PCA_attributes():
     [sampleData,groundTruth]=getFeaturesAndLabelsFrom(df)
     k_means = K_Means(k=2)
     k_means.fit(sampleData)
+    print(k_means.classesList, k_means.centroids_list(), groundTruth)
     print_final_results(k_means.classesList, k_means.centroids_list(), groundTruth)
 
 execute()
