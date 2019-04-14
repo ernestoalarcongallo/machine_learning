@@ -47,14 +47,12 @@ def standarize_features(features):
     # Return the standardized data and the ground truth
     standarized_features = np.divide((features-theMeans),theStd)
     print('Standarized data:\n{}'.format(standarized_features))
-    np.savetxt("standarized_data.csv", standarized_features, delimiter=",")
     return standarized_features
 
 def pca(features):
     N = features.shape[0]
     covariance = np.dot(features.T,features)/N
     print('covariance:\n{}'.format(covariance))
-    np.savetxt("covariance_matrix.csv", covariance, delimiter=",")
 
     [eigenValues,eigenVectors] = np.linalg.eigh(covariance)
     # Sort them descending
@@ -62,8 +60,6 @@ def pca(features):
     [eigenValues,eigenVectors] = [eigenValues[iSort],eigenVectors[:,iSort]]
     print('Eigen Values:\n{}'.format(eigenValues))
     print('Eigen Vectors:\n{}'.format(eigenVectors))
-    np.savetxt("eigenValues.csv", eigenValues, delimiter=",")
-    np.savetxt("eigenVectors.csv", eigenVectors, delimiter=",")
     
     # Return the eigenvalues and vectors
     return eigenValues,eigenVectors
@@ -76,14 +72,13 @@ def get_explained_variance(eigenValues):
     # sum of explained variances.
     explainedVariances = np.cumsum(np.divide(eigenValues,np.sum(eigenValues)))
     print('Explained Variances:\n{}'.format(explainedVariances))
-    np.savetxt("Explained Variances.csv", explainedVariances, delimiter=",")
 
     return explainedVariances
 
-def execute():
+def execute(fileName):
     """Execute all the process step by step"""
     np.set_printoptions(formatter={'float':lambda x: '%.2f'%x})
-    df = load_data('small.csv')
+    df = load_data(fileName)
     preprocess_data(df)
     features, labels = getFeaturesAndLabelsFrom(df)
     features = standarize_features(features)
@@ -106,4 +101,4 @@ def execute():
     print(' - VECTORS REQUIRED    : '+str(numVectors+1))
     print(' - PROJECTED ATTRIBUTES:\n'+str(projectedAttributes))
 
-execute()
+execute("small.csv")

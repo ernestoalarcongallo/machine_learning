@@ -108,6 +108,12 @@ def print_final_results(theClasses,theCentroids,groundTruth):
 
 def cluster_example(fileName):
     [sampleData,groundTruth]=prepare_data(fileName)
+    #print_final_results(kMeansOut.labels_, kMeansOut.cluster_centers_, groundTruth)
+
+    # ytdist = np.array([662., 877., 255., 412., 996., 295., 468., 268.,
+    #                    400., 754., 564., 138., 219., 869., 669.])
+    
+    
     Z = hierarchy.linkage(sampleData, 'complete')
     plt.figure()
     dn = hierarchy.dendrogram(Z)
