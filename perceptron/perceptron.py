@@ -21,7 +21,7 @@ class Perceptron:
         self.n_iter = n_iter
         self.random_state = random_state
 
-    def fit(X, y):
+    def fit(self, X, y):
         """ The fit method for training data
         Parameters:
         -----------
@@ -44,12 +44,13 @@ class Perceptron:
                 self.w_[1:] += update * xi
                 self.w_[0] += update # w0*x0 = Bias*1
                 errors += int(update != 0.0)
+            self.errors_.append(errors)
         
         return self
 
     def net_input(self, X):
         """Calculate net input"""
-        return np.dot(X, self.w[1:]) + self.w_[0] # wT*X
+        return np.dot(X, self.w_[1:]) + self.w_[0] # wT*X
 
     def predict(self, X):
         """Calculate the class label after unit step"""
@@ -73,5 +74,13 @@ plt.scatter(X[50:, 0], X[50:100, 1], color='blue', marker='x', label='versicolor
 
 plt.xlabel('sepal lenght [cm]')
 plt.ylabel('petal lenght [cm]')
-plt.legend(loc='uppe left')
+plt.legend(loc='upper left')
 plt.show()
+
+perceptron = Perceptron(eta=0.1, n_iter=10)
+perceptron.fit(X, y)
+plt.plot(range(1, len(perceptron.errors_) + 1), perceptron.errors_, marker='o')
+plt.xlabel('Epochs')
+plt.ylabel('Number of updates')
+plt.show()
+print(perceptron.errors_)
