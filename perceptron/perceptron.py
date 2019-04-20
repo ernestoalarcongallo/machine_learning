@@ -77,10 +77,10 @@ plt.ylabel('petal lenght [cm]')
 plt.legend(loc='upper left')
 plt.show()
 
+# Plot the error evolution
 perceptron = Perceptron(eta=0.1, n_iter=10)
 perceptron.fit(X, y)
 plt.plot(range(1, len(perceptron.errors_) + 1), perceptron.errors_, marker='o')
 plt.xlabel('Epochs')
 plt.ylabel('Number of updates')
 plt.show()
-print(perceptron.errors_)
