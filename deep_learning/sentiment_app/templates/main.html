@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Sentiment App</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+
+{% from "_formhelpers.html" import render_field %}
+
+<div>Write a sentence and I will tell what your sentiment is.</div>
+<form method=post action="/hello">
+
+  <dl>
+	  {{ render_field(form.sayhello) }}
+  </dl>
+
+  <input type=submit value='Predict' name='submit_btn'>
+
+</form>
+
+  </body>
+</html>

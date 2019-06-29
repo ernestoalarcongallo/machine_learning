@@ -112,7 +112,7 @@ for theClass in testSet:
         if theClass == prediction:
             correct += 1
         else:
-            print('The confidence for an incorrect classification was: {}'.format(confidence))
+            print('Incorrect classification for "{}" with Confidence={}'.format(data, confidence))
         total += 1
     
 print('ACCURACY: {}'.format(correct/total))
