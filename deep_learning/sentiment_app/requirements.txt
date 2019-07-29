@@ -1,0 +1,9 @@
+Flask==0.10.1
+Jinja2==2.6
+Werkzeug==0.9
+gunicorn==0.17.2
+wtforms==2.1
+numpy==1.16
+tensorflow==1.9
+keras==2.2
+psycopg2==2.8.3

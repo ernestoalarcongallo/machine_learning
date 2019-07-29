@@ -19,7 +19,11 @@ def hello():
     if request.method == 'POST' and form.validate():
         name = request.form['sayhello']
         predictions = model.predict(name)
-        return render_template('sentiment.html', name=predictions[0])
+        if predictions is None:
+            sentiment='Sorry, I can\'t predict this, I am still learning... 🙏'
+        else:
+            sentiment=predictions[0]
+        return render_template('sentiment.html', name=sentiment)
     return render_template('main.html', form=form)
 
 if __name__ == '__main__':

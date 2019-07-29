@@ -4,10 +4,14 @@ import tensorflow as tf
 from tensorflow import keras
 from keras.preprocessing.text import text_to_word_sequence
 import os
+import json
 
-class Model:
+class Model:    
     def __init__(self):
-        self.model_name = 'sentiment_model'
+        PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+        MODELS_DIR = os.path.join(PROJECT_ROOT, 'models')
+        self.model_weights_path = os.path.join(MODELS_DIR, 'sentiment_weights.h5')
+        self.words_index_path = os.path.join(MODELS_DIR, 'word_index.json')
         self.word_index = self.load_dictionary()
         self.model = self.load()
 
@@ -17,8 +21,15 @@ class Model:
         return (train_data, train_labels), (test_data, test_labels)
 
     def load_dictionary(self):
-        imdb = keras.datasets.imdb
-        word_index = imdb.get_word_index()
+        word_index = None
+        try:
+            with open(self.words_index_path, 'r') as json_file:
+                word_index = json.load(json_file)
+        except:
+            imdb = keras.datasets.imdb
+            word_index = imdb.get_word_index()
+            with open(self.words_index_path, 'w') as json_file:
+                json.dump(word_index, json_file)
 
         # The first indices are reserved
         word_index = {k:(v+3) for k,v in word_index.items()} 
@@ -43,23 +54,18 @@ class Model:
         return train_data, test_data
     
     def make_compiled_model(self):
-        # input shape is the vocabulary count used for the movie reviews (10,000 words)
         vocab_size = 10000
-
         model = keras.Sequential()
         model.add(keras.layers.Embedding(vocab_size, 16))
         model.add(keras.layers.GlobalAveragePooling1D())
         model.add(keras.layers.Dense(16, activation=tf.nn.relu))
         model.add(keras.layers.Dense(1, activation=tf.nn.sigmoid))
 
-        model.compile(optimizer='adam',
-              loss='binary_crossentropy',
-              metrics=['acc'])
+        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['acc'])
 
         return model
 
     def train_model(self, train_data, train_labels, model):
-        # We just pick 10000 samples to be faster.
         x_val = train_data[:10000]
         partial_x_train = train_data[10000:]
 
@@ -74,14 +80,15 @@ class Model:
                     verbose=1)
     
     def save_model(self, model):
-        model.save(self.model_name)
+        model.save(self.model_weights_path)
 
     def load(self):
         try:
-            loaded_model = tf.keras.models.load_model(self.model_name)
-            return loaded_model
+            model = self.make_compiled_model()
+            model.load_weights(self.model_weights_path)
+            return model
         except:
-            (train_data, train_labels), (test_data, test_labels) = self.load_data()
+            (train_data, train_labels), (test_data, _) = self.load_data()
             train_data, test_data = self.preprocess_data(train_data, test_data)
             model = self.make_compiled_model()
             self.train_model(train_data, train_labels, model)
@@ -99,7 +106,8 @@ class Model:
                                                        value=self.word_index["<PAD>"],
                                                        padding='post',
                                                        maxlen=256)
-
-        predictions = self.model.predict([input_data])
-        
-        return predictions
+        try:
+            predictions = self.model.predict([input_data])
+            return predictions
+        except:
+            return None
