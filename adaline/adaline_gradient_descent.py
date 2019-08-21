@@ -1,11 +1,11 @@
-    
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from mlxtend.plotting import plot_decision_regions
 
-class Adaline(object):
+class AdalineGD(object):
   """
+  - Adaline using Gradient descent
   - This code pretends to be Python agnistic, that's why we inherit from object.
   
   Parameters
@@ -34,7 +34,7 @@ class Adaline(object):
 
   def fit(self, X, y):
     """ Fit training data
-    
+
     Parameters
     ----------
     X: {array like}, shape = [n_samples, n_features]
@@ -87,14 +87,14 @@ def main():
   _ , ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 4))
 
   # Too big learning rate (eta=0.01)
-  adaline1 = Adaline(n_iter=10, eta=0.01).fit(X, y)
+  adaline1 = AdalineGD(n_iter=10, eta=0.01).fit(X, y)
   ax[0].plot(range(1, len(adaline1.cost_) + 1), np.log10(adaline1.cost_), marker='o')
   ax[0].set_xlabel('Epochs')
   ax[0].set_ylabel('log(Sum-squared-error)')
   ax[0].set_title('Adaline - Learning rate 0.01')
 
   # Too small learning rate (eta=0.0001)
-  adaline2 = Adaline(n_iter=10, eta=0.0001).fit(X, y)
+  adaline2 = AdalineGD(n_iter=10, eta=0.0001).fit(X, y)
   ax[1].plot(range(1, len(adaline2.cost_) + 1), adaline2.cost_, marker='o')
   ax[1].set_xlabel('Epochs')
   ax[1].set_ylabel('Sum-squared-error')
@@ -107,7 +107,7 @@ def main():
   X_std[:,0] = (X[:,0] - X[:,0].mean()) / X[:,0].std()
   X_std[:,1] = (X[:,1] - X[:,1].mean()) / X[:,1].std()
 
-  adaline3 = Adaline(n_iter=10, eta=0.01).fit(X_std, y)
+  adaline3 = AdalineGD(n_iter=10, eta=0.01).fit(X_std, y)
   plot_decision_regions(X_std, y, clf=adaline3)
   plt.title('Adaline - Gradient Descent')
   plt.xlabel('sepal length')
